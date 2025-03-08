@@ -16,7 +16,7 @@ class AdminController {
         try{
             const content = req.body
             const parseContent = await createAccountSchema.parseAsync(content)
-            const apiResponse = await this.authservices.createFaculty(parseContent)
+            const apiResponse = await this.authservices.createAccount(parseContent)
             const contentMessage = `The User have been Created`
             return sendApiResposne(res,apiResponse,contentMessage)
         }catch(err){

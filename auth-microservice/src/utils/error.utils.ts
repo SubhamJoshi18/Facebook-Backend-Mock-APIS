@@ -1,4 +1,5 @@
-import {Request,Response} from 'express'
+import { HttpExceptions } from '../exceptions'
+import {NextFunction, Request,Response} from 'express'
 import statusCode from 'http-status-codes'
 
 function handleNotFoundError(req:Request,res:Response){
@@ -10,4 +11,17 @@ function handleNotFoundError(req:Request,res:Response){
 
 }
 
-export default handleNotFoundError
+
+function globalErrorMiddleware(err:HttpExceptions,req:Request,res:Response,next:NextFunction) {
+    return res.status(err.getStatusCode()).json({
+        data : null,
+        message : err.getMessage(),
+        error: true,
+        errorTrace :err.stack,
+    })
+}
+
+export {
+    handleNotFoundError,
+    globalErrorMiddleware
+}

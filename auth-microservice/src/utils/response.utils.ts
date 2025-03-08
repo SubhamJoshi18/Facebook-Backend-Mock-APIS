@@ -13,6 +13,13 @@ function sendApiResposne <T>(res:Response,data:T,message :string,statusCode=http
 }
 
 
+
+function formattedMongooseValue(value:string){
+    return `The Attribute Has been  Missing : ${value}`
+}
+
+
 export {
-    sendApiResposne
+    sendApiResposne,
+    formattedMongooseValue
 }
