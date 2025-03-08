@@ -5,6 +5,7 @@ import initializeServerRoutes from "./routes/server.routes"
 import SingletonDBConnection from "./database/connect"
 import { DataSource } from "typeorm"
 import { getEnvValue } from "./libs/env.libs"
+import mongoose from "mongoose"
 
 
 class AuthServer {
@@ -21,17 +22,15 @@ class AuthServer {
 
     public async startAuthServer(port:number, app : Application) : Promise<void> {
         try{  
-            SingletonDBConnection.connectDB().then(async (connection : DataSource) => {
-
-                lmsLogger.info(`Database Connected Successfully, DB Name : ${getEnvValue('DB_NAME')}`)
-
+            SingletonDBConnection.connectDB().then(async (connection : typeof mongoose) => {
+                lmsLogger.info(`Database Connected Successfully, DB Name : ${connection.connection.name}`)
                 await this.initalizeRouteAndMiddlewares(app as Application)
                 app.listen(port,() => {
                     lmsLogger.info(`Backend Auth Microservice is running on ${port}`)
                 })
             }).catch((err) => {
                 console.log(err)
-                lmsLogger.error(`Error Connecting to the Database ${getEnvValue('DB_NAME')}`)
+                lmsLogger.error(`Error Connecting to the Database`)
                 throw err
             })
            
