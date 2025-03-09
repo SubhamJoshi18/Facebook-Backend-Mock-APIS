@@ -137,7 +137,7 @@ class UserServices {
         const elasticPayload = {
             userId : uniqueUserIds,
             imageUrl : originalname,
-            isDeactivated : checkUserExists['isActive'] ? checkUserExists['isActive'] : false,
+            isDeactivated : false,
             coRelationId : hashCorelationId,
             type : 'Photo',
             mimetype : mimetype,
@@ -217,7 +217,7 @@ class UserServices {
         const elasticPayload = {
             userId : uniqueUserIds,
             imageUrl : originalname,
-            isDeactivated : checkUserExists['isActive'] ? checkUserExists['isActive'] : false,
+            isDeactivated : false,
             coRelationId : hashCorelationId,
             type : 'Photo',
             mimetype : mimetype,

@@ -51,6 +51,15 @@ class UserRepository {
         return updatedProfile
     }
 
+
+    public async populateUserProfile(userId : Types.ObjectId) {
+        const populateResult = await User.findOne(
+            {
+                _id : userId
+            }
+        ).populate('userProfile')
+        return populateResult
+    }
 }
 
 

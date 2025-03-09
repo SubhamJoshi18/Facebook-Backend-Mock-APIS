@@ -16,12 +16,6 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : [true,formattedMongooseValue('Password')]
     },
-
-    isActive : {
-        type : Boolean,
-        default : true
-    },
-
     userProfile : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'UserProfile',
