@@ -35,6 +35,26 @@ class UserProfileServices {
 
     }
 
+    public async activateUser(userId : string) {
+
+        const checkUserExists = await this.userRepository.searchDataUser('_id',userId);
+
+        if(!checkUserExists) throw new DatabaseExceptions(`Error while fetching the User Data, Server Error`);
+
+        const userProfile = checkUserExists.userProfile as unknown as string
+
+        const checkUserProfileDocs = await this.userProfileRepository.fetchUserProfile(userProfile as any);
+
+        if(!checkUserProfileDocs) throw new DatabaseExceptions(`Error while fetching the User Profile Data, Server Error`);
+
+        const updatedResult = await this.userProfileRepository.updateDataUserProfile(userProfile,'isActive',true);
+
+        return {
+            updatedResult : updatedResult.acknowledged && updatedResult.matchedCount > 0
+        }
+
+    }
+
 }
 
 

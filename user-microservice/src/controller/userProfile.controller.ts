@@ -16,6 +16,17 @@ class UserProfileController {
         }
     } 
 
+    public async activateUser(req:Request,res:Response,next:NextFunction){
+        try{
+            const userId = req.user._id;
+            const apiResponse = await UserProfileService.deactivateUser(userId);
+            const contentMessage = `The User Has been Activated`;
+            return sendApiResposne(res,apiResponse,contentMessage);
+        }catch(err){
+            next(err)
+        }
+    } 
+
 }
 
 
