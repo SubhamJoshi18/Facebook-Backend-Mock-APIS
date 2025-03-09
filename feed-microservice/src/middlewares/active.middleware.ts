@@ -1,5 +1,5 @@
 import { Request,Response,NextFunction } from "express"
-import UserRepository from "../repository/user.repository";
+import UserRepository from '../repository/user.repository'
 import { DatabaseExceptions } from "../exceptions";
 import { lmsLogger } from "../libs/logger.libs";
 

@@ -1,14 +1,14 @@
 import { NextFunction, Request,Response } from "express";
-import { changePasswordSchema } from "../validations/user.validation";
+import { createPostSchema } from "../validations/feed.validation";
 import { ValidationExceptions } from "../exceptions";
 
 
 
-async function validateChangePasswordBody(req:Request,_res:Response,next:NextFunction){
+async function validateCreatePost(req:Request,_res:Response,next:NextFunction){
 
     try{
         const content = req.body;
-        const parseBody = await changePasswordSchema.parseAsync(content);
+        const parseBody = await createPostSchema.parseAsync(content);
         if(!parseBody) throw new ValidationExceptions(`There is an Validation Error`);
         next();
     }catch(err){
@@ -20,5 +20,5 @@ async function validateChangePasswordBody(req:Request,_res:Response,next:NextFun
 
 
 export {
-  validateChangePasswordBody
+  validateCreatePost
 }

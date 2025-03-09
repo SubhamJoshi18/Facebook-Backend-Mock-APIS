@@ -1,6 +1,7 @@
 import { lmsLogger } from "../libs/logger.libs";
 import { Client } from "@elastic/elasticsearch";
 import { ELASTIC_URL } from "../constants/elastic.constants";
+import MergeAllIndices from "./index/main.index";
 
 
 
@@ -22,7 +23,7 @@ class SingletonElasticConnection {
                 const clusterHealth = await this.elasticClient.cluster.health({})
                 const clusterStatus = clusterHealth['status']
                 lmsLogger.info(`The Cluster Status : ${clusterStatus}`)
-                // await MergeAllIndices()
+                await MergeAllIndices()
                 return this.elasticClient
             }catch(err){
                 console.log(err)

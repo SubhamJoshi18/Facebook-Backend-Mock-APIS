@@ -6,7 +6,8 @@ import SingletonDBConnection from "./database/connect"
 import mongoose from "mongoose"
 import SingletonRedisConnection from "./redis/redis.connect"
 import SingletonElasticConnection from "./elasticSearch/connect"
-import { ELASTIC_INDEX } from "./constants/elastic.constants"
+import { ELASTIC_FEED_INDEX } from "./constants/elastic.constants"
+import { ELASTIC_FEED_PHOTO_INDEX } from "./constants/elastic.constants"
 
 
 class AuthServer {
@@ -29,7 +30,8 @@ class AuthServer {
                 
                 SingletonElasticConnection.connectElastic().then(() => {
                     
-                    lmsLogger.info(`Database Connected Successfully, DB Name : ${ELASTIC_INDEX}`)
+                    lmsLogger.info(`Database Connected Successfully, DB Name : ${ELASTIC_FEED_INDEX}`)
+                    lmsLogger.info(`Database Connected Successfully, DB Name : ${ELASTIC_FEED_PHOTO_INDEX}`)
                     
                     SingletonRedisConnection.connectRedis().then(async () => {
                         lmsLogger.info(`Redis Server Connected Successfully`)
