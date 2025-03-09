@@ -25,6 +25,8 @@ class AuthServer {
         try{  
             SingletonDBConnection.connectDB().then(async (connection : typeof mongoose) => {
                 lmsLogger.info(`Database Connected Successfully, DB Name : ${connection.connection.name}`)
+                
+                
                 SingletonElasticConnection.connectElastic().then(() => {
                     
                     lmsLogger.info(`Database Connected Successfully, DB Name : ${ELASTIC_INDEX}`)

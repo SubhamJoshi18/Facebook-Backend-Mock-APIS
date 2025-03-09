@@ -1,26 +1,29 @@
 import { lmsLogger } from "../libs/logger.libs";
 import { Client } from "@elastic/elasticsearch";
 import { ELASTIC_URL } from "../constants/elastic.constants";
+import MergeAllIndices from "./index/main.index";
 
 
 
 class SingletonElasticConnection {
 
+    public static elasticClient : Client;
 
-    public static async connectElastic(){
+    public static async connectElastic()  {
+        
         let retryCount = 4;
         while(retryCount > 0) {
             try{
-
-                const elasticClient = new Client(
+                 this.elasticClient = new Client(
                     {
                         node : ELASTIC_URL as string
                     }
                 )
-                const clusterHealth = await elasticClient.cluster.health({})
+                const clusterHealth = await this.elasticClient.cluster.health({})
                 const clusterStatus = clusterHealth['status']
                 lmsLogger.info(`The Cluster Status : ${clusterStatus}`)
-                return elasticClient
+                await MergeAllIndices()
+                return this.elasticClient
             }catch(err){
                 
                 const isMaximumExceeded  = retryCount.toString().startsWith('0')
@@ -33,9 +36,23 @@ class SingletonElasticConnection {
                 continue
 
             }
+
+            
         }
+        
+        
     }
 
+
+    public static async getElasticClient(){
+        if(this.elasticClient) {
+            return this.elasticClient
+        }else{
+            const elasticClient = await this.connectElastic()
+            return elasticClient
+        }
+
+    }
 
 
 }
