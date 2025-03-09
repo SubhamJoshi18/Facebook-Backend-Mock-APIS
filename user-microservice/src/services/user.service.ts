@@ -86,7 +86,14 @@ class UserServices {
             redis :false
         
     }
-}
+
 }
 
+
+    public async uploadPhoto() {
+        
+    }
+
+
+}
 export default new UserServices()

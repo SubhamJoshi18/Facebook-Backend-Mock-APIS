@@ -25,7 +25,7 @@ class SingletonElasticConnection {
                 await MergeAllIndices()
                 return this.elasticClient
             }catch(err){
-                
+                console.log(err)
                 const isMaximumExceeded  = retryCount.toString().startsWith('0')
                 if(isMaximumExceeded) {
                     lmsLogger.error(`Maximum Retry is Exceeded, Terminiating the Server`);

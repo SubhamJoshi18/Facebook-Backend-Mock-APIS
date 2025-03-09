@@ -2,6 +2,7 @@ import { Request,Response,NextFunction } from "express"
 import UserService from "../services/user.service"
 import { IChangePassword } from "../interfaces/user.interface"
 import { sendApiResposne } from "../utils/response.utils"
+import { Next } from "mysql2/typings/mysql/lib/parsers/typeCast"
 
 
 class UserController {
@@ -31,6 +32,18 @@ class UserController {
         }catch(err){
             next(err)
         }
+    }
+
+
+    public async uploadPhoto(req:Request,res:Response,next:NextFunction) {
+        try{
+            const userId = req.user._id;
+            console.log(req.file)
+            const apiResponse = await UserService.uploadPhoto()
+        }catch(err){
+            next(err)
+        }
+
     }
 
 }

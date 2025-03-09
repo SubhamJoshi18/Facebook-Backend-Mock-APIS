@@ -11,6 +11,14 @@ async function createFacebookUploadIndex() {
 
     const elasticClient = await SingletonElasticConnection.getElasticClient()
 
+    const searchIndex = await elasticClient?.indices.exists({index : ELASTIC_INDEX as string})
+
+    if(typeof searchIndex === 'boolean' && searchIndex) {
+        lmsLogger.info(`${ELASTIC_INDEX} Has Already Been Created`,searchIndex)
+        return
+    }
+
+
     const indexResult = await elasticClient?.indices.create(
         {
             index : ELASTIC_INDEX as string,
