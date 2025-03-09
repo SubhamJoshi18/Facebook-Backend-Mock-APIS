@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { DatabaseExceptions } from "../exceptions";
 import BcryptHelper from "../helpers/bcrypt.helper";
-import { ICreateAccount } from "../interfaces/auth.interface";
+import { ICreateAccount, ILoginAccount } from "../interfaces/auth.interface";
 import AuthRepository from "../repository/auth.repository";
 import UserProfileRepository from "../repository/userProfile.repository";
 
@@ -60,7 +60,36 @@ class AuthServices {
 
         return responsePayload
     }
+
+
+
+    public async loginAccount(parsePayload : ILoginAccount) {
+
+        const { email, password } = parsePayload
+
+
+        const checkEmailExists = await this.authRepository.searchDataAuth('email',email)
+
+        if(!checkEmailExists) throw new DatabaseExceptions(`The Email Does not Exists, Please Try a valid Email`);
+
+        const userPassword = checkEmailExists['password'] ? checkEmailExists.password : null
+
+        const comparePasswordStatus = await this.bcryptHelper.comparePassword(password,userPassword as string)
+
+        if(typeof comparePasswordStatus === 'boolean' && !comparePasswordStatus) throw new DatabaseExceptions(`Password is Incorrect, Please Try a valid Password`);
+
+        return comparePasswordStatus
+
+
+
+
+
+
+    }
+
+
+
 }
 
 
-export default AuthServices
+export default new AuthServices()

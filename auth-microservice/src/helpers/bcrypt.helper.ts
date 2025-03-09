@@ -12,10 +12,15 @@ class BcryptHelper {
 
 
     public async hashPassword(rawPassword : string){
-
         const generatedSalt = await this.genSalt()
         const hashPassword = await bcrypt.hash(rawPassword,generatedSalt)
         return hashPassword
+    }
+
+
+    public async comparePassword(newPassword : string, oldPassword : string) {
+        const compareStatus = await bcrypt.compare(newPassword,oldPassword)
+        return compareStatus
     }
 
 }

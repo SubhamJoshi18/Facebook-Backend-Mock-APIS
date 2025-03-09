@@ -36,9 +36,31 @@ class DatabaseExceptions extends HttpExceptions {
 }
 
 
+class ValidationExceptions extends HttpExceptions {
+
+    constructor(message : string) {
+        super(message)
+        this.name = 'Validation Exceptions'
+        Object.setPrototypeOf(this,new.target.prototype)
+    }
+}
+
+
+class ConnectionExceptions extends HttpExceptions {
+
+    constructor(message : string) {
+        super(message)
+        this.name = 'Connection Exceptions'
+        Object.setPrototypeOf(this,new.target.prototype)
+    }
+}
+
+
 export {
     HttpExceptions,
-    DatabaseExceptions
+    DatabaseExceptions,
+    ValidationExceptions,
+    ConnectionExceptions
 }
 
 

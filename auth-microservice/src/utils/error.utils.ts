@@ -12,13 +12,24 @@ function handleNotFoundError(req:Request,res:Response){
 }
 
 
-function globalErrorMiddleware(err:HttpExceptions,req:Request,res:Response,next:NextFunction) {
-    return res.status(err.getStatusCode()).json({
+function globalErrorMiddleware(err:HttpExceptions | any,req:Request,res:Response,next:NextFunction) {
+    
+    if(err instanceof HttpExceptions) {
+        return res.status(err.getStatusCode()).json({
+            data : null,
+            message : err.getMessage(),
+            error: true,
+            errorTrace :err.stack,
+        })
+    }
+
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
         data : null,
-        message : err.getMessage(),
+        message : err.message,
         error: true,
         errorTrace :err.stack,
     })
+  
 }
 
 export {
