@@ -168,5 +168,80 @@ class UserServices {
     }
 
 
+    public async changePhoto(userId : string, fileContent : IFileContent) {
+
+
+        const elasticClient = await SingletonElasticConnection.getElasticClient();
+
+        const checkUserExists = await this.userRepository.searchDataUser('_id',userId);
+
+        if(!checkUserExists) throw new DatabaseExceptions(`The User Does not Exists on the System`);
+
+        const { encoding, mimetype , size, originalname , filename,fieldname} = fileContent
+
+        const isEmptySize = size.toString().startsWith('0')
+
+        if(isEmptySize) throw new ValidationExceptions(`Error while inserting empty Photo. Please Insert the Appropriate Photo`);
+
+        
+        const [imageFormat, imageMimeType] = mimetype.split('/');
+    
+        const isValidMimeTypes = Object.keys(MIME_TYPES).includes(imageMimeType)
+
+        if(!isValidMimeTypes) throw new DatabaseExceptions(`Error while inserting photo, Invalid Mime Types`)
+
+        
+        const userProfileId = checkUserExists.userProfile?._id as Types.ObjectId
+
+        const fetchUserProfile = await this.userProfileRepository.fetchUserProfile(userProfileId);
+        
+        if(!fetchUserProfile) throw new DatabaseExceptions(`The User Profile Cannot be Fetches, Due to Server Error`);
+
+        const imageId = fetchUserProfile.image as string;
+
+        const isImageInElastic = await elasticClient?.get({
+            index : ELASTIC_INDEX as string,
+            id : imageId
+        })
+
+        if(!isImageInElastic) throw new DatabaseExceptions(`The Image Id : ${imageId} Does not Exists on the Elastic Search`);
+
+        const uniqueUserIds = checkUserExists._id
+
+        const hashPayload = Object.freeze({
+            ...checkUserExists
+        })
+
+        const hashCorelationId = crypto.createHash('sha256').update(JSON.stringify(hashPayload)).digest('hex')
+
+        const elasticPayload = {
+            userId : uniqueUserIds,
+            imageUrl : originalname,
+            isDeactivated : checkUserExists['isActive'] ? checkUserExists['isActive'] : false,
+            coRelationId : hashCorelationId,
+            type : 'Photo',
+            mimetype : mimetype,
+            fileName : filename,
+            fieldName :fieldname
+        }
+
+        const updatedElasticResult = await elasticClient?.update(
+            {
+                index : ELASTIC_INDEX as string,
+                id : imageId,
+                doc : elasticPayload
+            }
+        )
+
+
+        const updatedResultId = updatedElasticResult?._id;
+
+        const updatedMongoResult = await this.userProfileRepository.updateDataUserProfile(userProfileId as unknown as string,'image',updatedResultId);
+
+        return {
+            updatedResult : updatedMongoResult.acknowledged && updatedMongoResult.matchedCount > 0
+        }
+
+    }
 }
 export default new UserServices()

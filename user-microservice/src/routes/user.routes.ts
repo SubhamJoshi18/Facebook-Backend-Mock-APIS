@@ -14,9 +14,11 @@ const upload = multer({storage  : storage})
 userRouter.post('/user/change-password',verifyAuthToken,validateChangePasswordBody,UserController.changePassword as any)
 userRouter.get('/user/profile',verifyAuthToken,UserController.fetchUserProfile as any)
 userRouter.post('/user/upload-photo',verifyAuthToken, upload.single("photo"),UserController.uploadPhoto as any)
+userRouter.patch('/user/change-photo',verifyAuthToken,upload.single('photo'),UserController.changePhoto as any)
 
 
-// upload photo , change photo, activate , deactivate , change location  5 APIS
+
+// activate , deactivate , change location  5 APIS
 
 
 

@@ -45,7 +45,19 @@ class UserController {
         }catch(err){
             next(err)
         }
+    }
 
+
+    public async changePhoto(req:Request,res:Response,next:NextFunction) {
+        try{
+            const userId = req.user._id;
+            const fileContent = req.file
+            const apiResponse = await UserService.changePhoto(userId,fileContent as IFileContent)
+            const contentMessage = `The User has Change the Photo`
+            return sendApiResposne(res,apiResponse,contentMessage);
+        }catch(err){    
+            next(err)
+        }
     }
 
 }
