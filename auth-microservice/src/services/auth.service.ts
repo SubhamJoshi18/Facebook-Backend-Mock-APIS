@@ -6,7 +6,6 @@ import AuthRepository from "../repository/auth.repository";
 import UserProfileRepository from "../repository/userProfile.repository";
 import { createRedisKey } from "../libs/redis.libs";
 import { ipRedisPrefix } from "../constants/redis.constant";
-import { RedisClientType } from "redis";
 import SingletonRedisConnection from "../redis/redis.connect";
 import JsonWebTokenHelper from "../helpers/jsonwebtoken.helper";
 import { lmsLogger } from "../libs/logger.libs";
