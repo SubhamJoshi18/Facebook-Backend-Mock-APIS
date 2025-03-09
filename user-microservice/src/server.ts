@@ -5,6 +5,8 @@ import initializeServerRoutes from "./routes/server.routes"
 import SingletonDBConnection from "./database/connect"
 import mongoose from "mongoose"
 import SingletonRedisConnection from "./redis/redis.connect"
+import SingletonElasticConnection from "./elasticSearch/connect"
+import { ELASTIC_INDEX } from "./constants/elastic.constants"
 
 
 class AuthServer {
@@ -23,14 +25,19 @@ class AuthServer {
         try{  
             SingletonDBConnection.connectDB().then(async (connection : typeof mongoose) => {
                 lmsLogger.info(`Database Connected Successfully, DB Name : ${connection.connection.name}`)
-
-                SingletonRedisConnection.connectRedis().then(async () => {
-                    lmsLogger.info(`Redis Server Connected Successfully`)
-                    await this.initalizeRouteAndMiddlewares(app as Application)
-                    app.listen(port,() => {
-                        lmsLogger.info(`Backend User Microservice is running on ${port}`)
+                SingletonElasticConnection.connectElastic().then(() => {
+                    
+                    lmsLogger.info(`Database Connected Successfully, DB Name : ${ELASTIC_INDEX}`)
+                    
+                    SingletonRedisConnection.connectRedis().then(async () => {
+                        lmsLogger.info(`Redis Server Connected Successfully`)
+                        await this.initalizeRouteAndMiddlewares(app as Application)
+                        app.listen(port,() => {
+                            lmsLogger.info(`Backend User Microservice is running on ${port}`)
+                        })
                     })
                 })
+              
 
             }).catch((err) => {
                 console.log(err)

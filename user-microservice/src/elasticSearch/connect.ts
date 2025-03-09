@@ -9,8 +9,6 @@ class SingletonElasticConnection {
 
     public static async connectElastic(){
         let retryCount = 4;
-
-
         while(retryCount > 0) {
             try{
 
@@ -20,7 +18,8 @@ class SingletonElasticConnection {
                     }
                 )
                 const clusterHealth = await elasticClient.cluster.health({})
-                console.log(clusterHealth)
+                const clusterStatus = clusterHealth['status']
+                lmsLogger.info(`The Cluster Status : ${clusterStatus}`)
                 return elasticClient
             }catch(err){
                 
