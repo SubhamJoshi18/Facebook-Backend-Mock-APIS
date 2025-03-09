@@ -22,6 +22,17 @@ class UserController {
     }
 
 
+    public async fetchUserProfile(req:Request,res:Response,next:NextFunction) {
+        try{
+            const userId = req.user._id
+            const apiResponse = await UserService.fetchUserProfile(userId)
+            const contentMessage = `The User Profile Have been Fetches`;
+            return sendApiResposne(res,apiResponse,contentMessage)
+        }catch(err){
+            next(err)
+        }
+    }
+
 }
 
 

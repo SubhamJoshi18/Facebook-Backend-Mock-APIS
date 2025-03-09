@@ -1,7 +1,9 @@
 
 
 const ipRedisPrefix = 'ip'
+const userRedisPrefix = 'user'
 
 export {
-    ipRedisPrefix
+    ipRedisPrefix,
+    userRedisPrefix
 }

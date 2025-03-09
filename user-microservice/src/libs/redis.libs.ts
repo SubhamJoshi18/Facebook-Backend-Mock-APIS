@@ -9,12 +9,18 @@ async function createRedisKey(prefix:string,key:string){
    
     const data = await redisClient?.get(finalPrefix)
     if(data) prefixCount += 1;
-    finalPrefix = `${prefix}-${prefixCount}:${prefixCount}`
+    finalPrefix = `${prefix}-${key}:${prefixCount}`
     return finalPrefix
 }
 
 
 
+async function createUserKey(prefix:string,key:string) {
+    return `${prefix}-${key}`
+}
+
+
 export {
-    createRedisKey
+    createRedisKey,
+    createUserKey
 }

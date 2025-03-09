@@ -1,6 +1,10 @@
+import { userRedisPrefix } from "../constants/redis.constant";
 import { DatabaseExceptions, ValidationExceptions } from "../exceptions";
 import BcryptHelper from "../helpers/bcrypt.helper";
 import { IChangePassword } from "../interfaces/user.interface";
+import { lmsLogger } from "../libs/logger.libs";
+import { createRedisKey, createUserKey } from "../libs/redis.libs";
+import SingletonRedisConnection from "../redis/redis.connect";
 import UserRepository from "../repository/user.repository";
 
 
@@ -32,6 +36,7 @@ class UserServices {
 
         
         const diffInTime = currentDate - lastChangePassword; 
+
         const diffInDays = Math.floor(diffInTime / (1000 * 60 * 60 * 24));
 
         if(!(diffInDays.toString().startsWith('30'))){
@@ -54,8 +59,34 @@ class UserServices {
     }
 
 
+    public async fetchUserProfile(userId : string){
 
+        const redisClient =  await SingletonRedisConnection.getRedisClient();
+        
+        const dataResult = await this.userRepository.searchDataUser('_id',userId)
+
+        const dataId = dataResult && dataResult['_id'] ? dataResult._id : 'null'
+
+        if(!dataResult) throw new DatabaseExceptions(`Error Fetching the User Info From the Database`);
+
+        const userProfileKey = await createUserKey(userRedisPrefix,dataId as string)
+
+        const isDataRedis = await redisClient?.get(userProfileKey);
+
+        if(isDataRedis) return {user : JSON.parse(isDataRedis),redis : true};
+
+        const savedDatainRedis = await redisClient?.set(userProfileKey,JSON.stringify(dataResult),{NX : true,EX : 3600})  
+
+        const validInsertRedis = savedDatainRedis ? savedDatainRedis.toString().includes('OK') : null
+
+        if(validInsertRedis) lmsLogger.info(`The ${JSON.stringify(dataResult)} Has been Saved to the ${userProfileKey}`)
+
+        return {
+            user : dataResult,
+            redis :false
+        
+    }
 }
-
+}
 
 export default new UserServices()

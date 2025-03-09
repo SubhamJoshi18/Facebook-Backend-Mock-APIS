@@ -14,6 +14,7 @@ class SingletonRedisConnection {
                 lmsLogger.error(`Error in Connecting the Redis Server`)
                 throw new ConnectionExceptions(`Redis Connection Failed`)
             })
+            await redisClient.connect()
             return redisClient
         }catch(err){
             throw err
