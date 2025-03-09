@@ -20,6 +20,21 @@ class UserProfileRepository {
         return result
     }
 
+    public async updateDataUserProfile<T>(userId:string, attributePayload:string,payload :T) {
+        const updatedResult = await UserProfile.updateOne(
+            {
+                _id : userId
+            },
+            {
+                [`${attributePayload}`] : payload
+            },
+            {
+                $new : true
+            }
+        )
+        return updatedResult
+    }
+
 
 }
 

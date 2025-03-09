@@ -1,22 +1,30 @@
-import { userRedisPrefix } from "../constants/redis.constant";
-import { DatabaseExceptions, ValidationExceptions } from "../exceptions";
+
+import SingletonElasticConnection from "../elasticSearch/connect";  
 import BcryptHelper from "../helpers/bcrypt.helper";
-import { IChangePassword } from "../interfaces/user.interface";
-import { lmsLogger } from "../libs/logger.libs";
-import { createRedisKey, createUserKey } from "../libs/redis.libs";
 import SingletonRedisConnection from "../redis/redis.connect";
 import UserRepository from "../repository/user.repository";
-
+import crypto from 'crypto'
+import { lmsLogger } from "../libs/logger.libs";
+import { createUserKey } from "../libs/redis.libs";
+import { IChangePassword, IFileContent } from "../interfaces/user.interface";
+import { DatabaseExceptions, ValidationExceptions } from "../exceptions";
+import { MIME_TYPES } from "../constants/mime.constants";
+import { userRedisPrefix } from "../constants/redis.constant";
+import { ELASTIC_INDEX } from "../constants/elastic.constants";
+import UserProfileRepository from "../repository/userProfile.repository";
+import { Types } from "mongoose";
 
 
 class UserServices {
     
 
     private userRepository : UserRepository
+    private userProfileRepository : UserProfileRepository
     private bcryptHelper : BcryptHelper
 
     constructor(){
         this.userRepository = new UserRepository()
+        this.userProfileRepository = new UserProfileRepository()
         this.bcryptHelper = new BcryptHelper()
     }
 
@@ -90,8 +98,73 @@ class UserServices {
 }
 
 
-    public async uploadPhoto() {
+    public async uploadPhoto(userId : string,fileContent : IFileContent) {
+
+
+        const elasticClient = await SingletonElasticConnection.getElasticClient()
+
+        const checkUserExists = await this.userRepository.searchDataUser('_id',userId);
+
+        if(!checkUserExists) throw new DatabaseExceptions(`The User Does not Exists on the System`);
+
+        const { encoding, mimetype , size, originalname , filename,fieldname} = fileContent
+
+        const isEmptySize = size.toString().startsWith('0')
+
+        if(isEmptySize) throw new ValidationExceptions(`Error while inserting empty Photo. Please Insert the Appropriate Photo`);
+
         
+        const [imageFormat, imageMimeType] = mimetype.split('/');
+    
+        const isValidMimeTypes = Object.keys(MIME_TYPES).includes(imageMimeType)
+
+        if(!isValidMimeTypes) throw new DatabaseExceptions(`Error while inserting photo, Invalid Mime Types`)
+
+
+        const hashPayload = Object.freeze(
+            {
+                username : checkUserExists.username,
+                email : checkUserExists.email,
+                _id : checkUserExists._id
+            }
+        )
+
+        const hashCorelationId = crypto.createHash('sha256').update(JSON.stringify(hashPayload)).digest('hex');
+
+        const uniqueUserIds = checkUserExists['_id'] ? checkUserExists._id : 'null'
+
+        
+        const elasticPayload = {
+            userId : uniqueUserIds,
+            imageUrl : originalname,
+            isDeactivated : checkUserExists['isActive'] ? checkUserExists['isActive'] : false,
+            coRelationId : hashCorelationId,
+            type : 'Photo',
+            mimetype : mimetype,
+            fileName : fieldname,
+            fieldName :fieldname
+        }
+
+        const saveElasticPayload = await elasticClient?.index({
+            index : ELASTIC_INDEX as string,
+            document : elasticPayload
+        })
+
+        const savedResult = saveElasticPayload?.result
+
+        const savedId = saveElasticPayload?._id
+        
+        const validSaved = savedResult ? savedResult.includes('created') : false
+
+        if(!validSaved) throw new DatabaseExceptions(`Error while saving to the Elastic Search`)
+
+        const userProfileIds = checkUserExists.userProfile as unknown as string;
+
+        const updatedResult = await this.userProfileRepository.updateDataUserProfile(userProfileIds,'image',savedId)
+
+        return {
+            uploadStatus : updatedResult.acknowledged && updatedResult.matchedCount > 0
+        }
     }
 
 

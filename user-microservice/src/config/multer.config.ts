@@ -4,7 +4,6 @@ import multer from 'multer'
 
 const multerConfig = {
     destination : (req : any,file : any,cb : any) => {
-        console.log(req)
         cb(null,'uploads/')
     },
     filename : (req:any,file:any,cb:any) => {
