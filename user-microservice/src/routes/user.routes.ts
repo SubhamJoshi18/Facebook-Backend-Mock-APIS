@@ -9,4 +9,9 @@ userRouter.post('/user/change-password',verifyAuthToken,validateChangePasswordBo
 userRouter.get('/user/profile',verifyAuthToken,UserController.fetchUserProfile as any)
 
 
+
+// upload photo , change photo, activate , deactivate , change location  5 APIS
+
+
+
 export default userRouter
