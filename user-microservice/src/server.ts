@@ -3,8 +3,6 @@ import { lmsLogger } from "./libs/logger.libs"
 import initalizeServerMiddleware from "./middlewares/server.middleware"
 import initializeServerRoutes from "./routes/server.routes"
 import SingletonDBConnection from "./database/connect"
-import { DataSource } from "typeorm"
-import { getEnvValue } from "./libs/env.libs"
 import mongoose from "mongoose"
 import SingletonRedisConnection from "./redis/redis.connect"
 
@@ -30,7 +28,7 @@ class AuthServer {
                     lmsLogger.info(`Redis Server Connected Successfully`)
                     await this.initalizeRouteAndMiddlewares(app as Application)
                     app.listen(port,() => {
-                        lmsLogger.info(`Backend Auth Microservice is running on ${port}`)
+                        lmsLogger.info(`Backend User Microservice is running on ${port}`)
                     })
                 })
 

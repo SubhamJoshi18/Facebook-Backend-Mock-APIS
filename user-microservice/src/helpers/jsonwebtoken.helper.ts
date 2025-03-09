@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { IJWTPayload } from '../interfaces/auth.interface'
+import { IJWTPayload } from '../interfaces/user.interface'
 import { getEnvValue } from '../libs/env.libs'
 
 

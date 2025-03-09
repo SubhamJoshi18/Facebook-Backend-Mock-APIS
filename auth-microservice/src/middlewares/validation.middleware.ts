@@ -1,5 +1,5 @@
 import { NextFunction, Request,Response } from "express";
-import { createAccountSchema, loginAccountSchema } from "../validations.ts/auth.validation";
+import { createAccountSchema, loginAccountSchema } from "../validations/auth.validation";
 import { ValidationExceptions } from "../exceptions";
 
 

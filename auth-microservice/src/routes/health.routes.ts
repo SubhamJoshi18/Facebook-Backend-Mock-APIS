@@ -5,10 +5,11 @@ import statusCode from 'http-status-codes'
 const healthRouter = Router()
 
 
-healthRouter.get('/health',(req:Request,res:Response) : void => {
+healthRouter.get('/auth/health',(req:Request,res:Response) : void => {
          res.status(statusCode.ACCEPTED).json({
             message : `Api is working ${req.originalUrl}`,
-            time  : `${new Date().toDateString()}`
+            time  : `${new Date().toDateString()}`,
+            routePrefix : "Auth"
         })
 })
 

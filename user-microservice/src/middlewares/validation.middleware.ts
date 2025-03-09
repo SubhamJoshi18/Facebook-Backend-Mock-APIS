@@ -1,14 +1,14 @@
 import { NextFunction, Request,Response } from "express";
-import { createAccountSchema, loginAccountSchema } from "../validations/auth.validation";
+import { changePasswordSchema } from "../validations/user.validation";
 import { ValidationExceptions } from "../exceptions";
 
 
 
-async function validateBody(req:Request,_res:Response,next:NextFunction){
+async function validateChangePasswordBody(req:Request,_res:Response,next:NextFunction){
 
     try{
         const content = req.body;
-        const parseBody = await createAccountSchema.parseAsync(content);
+        const parseBody = await changePasswordSchema.parseAsync(content);
         if(!parseBody) throw new ValidationExceptions(`There is an Validation Error`);
         next();
     }catch(err){
@@ -16,24 +16,9 @@ async function validateBody(req:Request,_res:Response,next:NextFunction){
     }
 }
 
-
-
-
-async function validateLoginBody(req:Request,_res:Response,next:NextFunction){
-
-    try{
-        const content = req.body;
-        const parseBody = await loginAccountSchema.parseAsync(content);
-        if(!parseBody) throw new ValidationExceptions(`There is an Validation Error`);
-        next();
-    }catch(err){
-        next(err)
-    }
-}
 
 
 
 export {
-    validateBody,
-    validateLoginBody
+  validateChangePasswordBody
 }

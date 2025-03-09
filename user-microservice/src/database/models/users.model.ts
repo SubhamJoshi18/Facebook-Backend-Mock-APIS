@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { formattedMongooseValue } from "../../utils/response.utils";
 
 const userSchema = new mongoose.Schema({
-
     username : {
         type : String,
         required : [true,formattedMongooseValue('User Name')]
@@ -27,6 +26,8 @@ const userSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : 'UserProfile',
     }
+}, {
+    timestamps : true
 })
 
 
