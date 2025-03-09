@@ -20,6 +20,13 @@ class SingletonRedisConnection {
         }
     }
 
+
+    public static async getRedisClient() {
+        const client = await this.connectRedis()
+        if(client) {
+            return client
+        }
+    }
 }
 
 export default SingletonRedisConnection

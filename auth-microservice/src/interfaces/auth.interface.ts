@@ -12,8 +12,15 @@ interface ILoginAccount {
     password : string
 }
 
+interface IJWTPayload {
+    email : string;
+    username : string;
+    _id : any;
+}
+
 
 export {
     ICreateAccount,
-    ILoginAccount
+    ILoginAccount,
+    IJWTPayload
 }

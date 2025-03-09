@@ -3,6 +3,7 @@ import requestIp from 'request-ip'
 import { Request,Response,NextFunction} from "express"
 import { sendApiResposne } from "../utils/response.utils"
 import { ICreateAccount } from "../interfaces/auth.interface"
+import { EXPRESS_APP_URL_FORGET_PASSWORD } from "../constants/module.constant"
 
 class AdminController {
 
@@ -21,9 +22,14 @@ class AdminController {
     public async loginAccount(req:Request,res:Response,next:NextFunction) {
             try{
                 const clientIp = requestIp.getClientIp(req)
-                console.log(clientIp)
                 const parseContent = req.body
-                const apiResponse = await AuthService.loginAccount(parseContent)
+                const apiResponse = await AuthService.loginAccount(parseContent,clientIp as string)
+                const {accessToken , isMaximumExceeded}  = apiResponse
+
+                if(isMaximumExceeded) {
+                    res.redirect(EXPRESS_APP_URL_FORGET_PASSWORD)
+                }
+
                 const contentMessage = `The User has been Logged in Successfully`
                 return sendApiResposne(res,apiResponse,contentMessage)
             }catch(err){
