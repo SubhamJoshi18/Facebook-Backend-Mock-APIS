@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken'
-import { IJWTPayload } from '../interfaces/user.interface'
 import { getEnvValue } from '../libs/env.libs'
 
 
@@ -7,20 +6,16 @@ class JsonWebTokenHelper {
 
 
 
-    public async createAccessToken(payload : IJWTPayload ){
-        const options  : jwt.SignOptions = {
-            issuer : 'Shubham Joshi',
-            expiresIn : '1h'
-        }
-
-        const secretKey  = getEnvValue('SECRET_ACCESS_TOKEN') as string
-
+    public async verifyAccessToken(token:string) {
+      
+        
+        const secretKey = getEnvValue('SECRET_ACCESS_TOKEN') as string
+      
         return new Promise((resolve,reject) => {
-                jwt.sign(payload,secretKey,options,(err,token) => {
-                    if(err) reject(err);
-                    resolve(token)
-                })
-
+             jwt.verify(token,secretKey,(err,decodedToken) => {
+                if(err) reject(err);
+                resolve(decodedToken)
+             })
         })
     }
 

@@ -19,7 +19,7 @@ const UserProfileSchema = new mongoose.Schema({
 
     isUser : {
         type : Boolean,
-        default : false
+        default : true
     },
 
     location : {

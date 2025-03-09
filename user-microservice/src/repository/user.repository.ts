@@ -2,7 +2,7 @@ import { Types } from "mongoose"
 import User from "../database/models/users.model"
 
 
-class AuthRepository {
+class UserRepository {
 
 
     public async insertData(data:object){
@@ -13,11 +13,26 @@ class AuthRepository {
     }
 
 
-    public async searchDataAuth<T>(attributePayload : string,searchData:T){
+    public async searchDataUser<T>(attributePayload : string,searchData:T){
         const data = await User.findOne({
             [`${attributePayload}`] : searchData
         })
         return data
+    }
+
+    public async updateDataUser<T>(userId:string, attributePayload:string,payload :T) {
+        const updatedResult = await User.updateOne(
+            {
+                _id : userId
+            },
+            {
+                [`${attributePayload}`] : payload
+            },
+            {
+                $new : true
+            }
+        )
+        return updatedResult
     }
 
 
@@ -39,4 +54,4 @@ class AuthRepository {
 }
 
 
-export default AuthRepository
+export default UserRepository
